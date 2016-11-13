@@ -1,18 +1,23 @@
 package thebounzer.org.oglClock;
 
+import com.jogamp.opengl.util.*;
 import java.awt.Frame;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.time.LocalTime;
 import javax.media.opengl.*;
 import javax.media.opengl.awt.GLCanvas;
-import com.jogamp.opengl.util.*;
-import java.time.LocalTime;
 
 /**
  *
  * @author thbounzer
  */
 public class OglClock implements GLEventListener {
+    public static int min = 3;
+    public static int sec = 2;
+    public static int hour = 4;
     
     
     public static void main(String[] args) {
@@ -22,7 +27,7 @@ public class OglClock implements GLEventListener {
         caps.setNumSamples(3);
         GLCanvas canvas = new GLCanvas(caps);
         Frame frame = new Frame("AWT Window Test");
-        frame.setSize(600, 600);
+        frame.setSize(800, 800);
         frame.add(canvas);
         frame.setVisible(true);
         int fps = 5;
@@ -30,6 +35,24 @@ public class OglClock implements GLEventListener {
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 System.exit(0);
+            }
+        });
+        
+        frame.addKeyListener(new KeyAdapter(){
+            public void keyPressed(KeyEvent e){
+                if(e.getKeyCode()==KeyEvent.VK_SPACE){
+                    System.exit(0);
+                }
+                if(e.getKeyCode()==KeyEvent.VK_H){
+                    hour-=0.000001;
+                }
+                if(e.getKeyCode()==KeyEvent.VK_S){
+                    sec-=0.000001;
+                }
+                if(e.getKeyCode()==KeyEvent.VK_M){
+                    min-=0.000001;
+                }
+                
             }
         });
         
@@ -72,15 +95,16 @@ public class OglClock implements GLEventListener {
 
         gl.glBegin(GL.GL_TRIANGLES);
         LocalTime timeNow = LocalTime.now();
+       // System.out.println(timeNow);
         int localHour = timeNow.getHour();
         double localSec  = timeNow.getSecond();
         int localMin = timeNow.getMinute();
         double currentSecMainAngle = ((Math.PI*2)/360)*((localSec*-6)+90);
         double currentMinMainAngle = ((Math.PI*2)/360)*((localMin*-6)+90);
-        double currentHourMainAngle = ((Math.PI*2)/360)*((localHour*30)+90);
-        rotatingIndicator(gl, currentSecMainAngle,15,1);
-        rotatingIndicator(gl, currentMinMainAngle,15,2);
-        rotatingIndicator(gl, currentHourMainAngle,15,3);
+        double currentHourMainAngle = ((Math.PI*2)/360)*((localHour*-30)+90);
+        rotatingIndicator(gl, currentSecMainAngle,30,sec);
+        rotatingIndicator(gl, currentMinMainAngle,30,min);
+        rotatingIndicator(gl, currentHourMainAngle,30,hour);
         gl.glEnd();
         
     }
